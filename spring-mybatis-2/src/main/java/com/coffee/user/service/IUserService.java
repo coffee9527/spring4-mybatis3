@@ -1,8 +1,8 @@
-package com.coffee.service;
+package com.coffee.user.service;
 
 import java.util.List;
 
-import com.coffee.entity.User;
+import com.coffee.user.entity.User;
 
 public interface IUserService {
 	void saveUser(User user);

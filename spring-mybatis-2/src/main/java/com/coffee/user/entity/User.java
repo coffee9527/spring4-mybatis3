@@ -1,4 +1,4 @@
-package com.coffee.entity;
+package com.coffee.user.entity;
 
 public class User {
 	private Integer id;

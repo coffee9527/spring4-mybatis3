@@ -1,8 +1,8 @@
-package com.coffee.dao;
+package com.coffee.user.dao;
 
 import java.util.List;
 
-import com.coffee.entity.User;
+import com.coffee.user.entity.User;
 
 public interface IUserDao {
 	/**

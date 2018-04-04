@@ -1,4 +1,4 @@
-package com.coffee.controller;
+package com.coffee.user.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.coffee.entity.User;
-import com.coffee.service.IUserService;
+import com.coffee.user.entity.User;
+import com.coffee.user.service.IUserService;
 
 @Controller
 public class UserController {
-	@Autowired
+	//@Autowired
     private IUserService userService;
     
     @RequestMapping(value="/showname",method=RequestMethod.GET)

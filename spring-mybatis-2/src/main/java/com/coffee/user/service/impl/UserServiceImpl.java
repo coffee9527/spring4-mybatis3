@@ -1,16 +1,16 @@
-package com.coffee.service.impl;
+package com.coffee.user.service.impl;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.coffee.dao.IUserDao;
-import com.coffee.entity.User;
-import com.coffee.service.IUserService;
+import com.coffee.user.dao.IUserDao;
+import com.coffee.user.entity.User;
+import com.coffee.user.service.IUserService;
 @Service("userService")
 public class UserServiceImpl implements IUserService {
-	@Autowired
+	//@Autowired
 	private IUserDao userDao;
 	
 	public void saveUser(User user) {

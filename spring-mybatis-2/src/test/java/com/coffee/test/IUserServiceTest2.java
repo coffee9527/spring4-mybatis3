@@ -3,8 +3,8 @@ package com.coffee.test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.coffee.entity.User;
-import com.coffee.service.IUserService;
+import com.coffee.user.entity.User;
+import com.coffee.user.service.IUserService;
 
 public class IUserServiceTest2 {
 	public static void main(String[] args) {

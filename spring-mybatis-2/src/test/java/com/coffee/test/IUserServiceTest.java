@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.coffee.entity.User;
-import com.coffee.service.IUserService;
+import com.coffee.user.entity.User;
+import com.coffee.user.service.IUserService;
 
 /**
  * 配置spring和junit整合，junit启动时加载springIOC容器 spring-test,junit
