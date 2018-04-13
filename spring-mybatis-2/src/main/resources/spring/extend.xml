@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+">	
+	<!-- 加载属性文件 -->
+	<!-- 方式一 -->
+	<!-- 
+		-》表示继承，---》表示实现
+		PropertyPlaceholderConfigurer-》PropertyResourceConfigurer-》---》BeanFactoryPostProcessor
+		实现BeanFactoryPostProcessor接口可以在bean初始化之前做一些其他的处理
+	 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="jdbc.properties"/>
+	</bean>
+	<!-- 方式二 -->
+	<!-- <context:property-placeholder location="classpath:com/foo/jdbc.properties,a.properties"/> -->
+	<!-- 方式三，会覆盖之前的属性 -->
+	<!-- <context:property-override location="classpath:override.properties"/> -->
+	<bean id="dataSource" destory-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}"/>
+	    <property name="url" value="${jdbc.url}"/>
+	    <property name="username" value="${jdbc.username}"/>
+	    <property name="password" value="${jdbc.password}"/>
+	</bean>
+	
+</beans>

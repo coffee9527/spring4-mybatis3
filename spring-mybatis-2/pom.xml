@@ -16,11 +16,42 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     
     
   </properties>
-  <dependencies>
-  <!-- 添加Spring依赖 -->
-  	<dependency>
+  
+  <dependencyManagement>
+  
+    <dependencies>
+    	<!-- 
+	  		导入spring-framework-bom，以确保所有spring依赖项（直接和可传递）具有相同的版本。
+	  	使用 BOM后，当依赖 Spring Framework组件后，无需再指定<version> 属性
+	  	 -->
+        <dependency>
         <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
+        <artifactId>spring-core</artifactId>
+        <version>${spring.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+        <exclusions>
+        	<!-- 排除spring的commons-logging，在后面的依赖中添加自己的日志依赖 -->
+            <exclusion>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    </dependencies>
+</dependencyManagement>
+  
+  <dependencies>
+  <!-- 添加Spring依赖(Core Container) -start-->
+  <!-- spring核心容器-start -->
+  <!-- 
+  	spring-core和spring-beans模块提供了框架的基本部分，包括IoC和依赖注入功能。
+  	 BeanFactory是一个复杂的工厂模式的实现。 它消除了编程单例的需要(程序员不必对单例亲力亲为)，
+  	 并允许你从实际的程序逻辑中分离依赖性的配置和规范。
+   -->
+  <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
         <version>${spring.version}</version>
     </dependency>
     <dependency>
@@ -28,53 +59,178 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	    <artifactId>spring-beans</artifactId>
 	    <version>${spring.version}</version>
 	</dependency>
-    
-    <dependency>
+	<!-- 
+		Context（spring-context）模块建立在Core和Beans模块提供的实体基础之上：
+	它是一种以类似于JNDI注册表的框架样式方式访问对象的手段。 Context模块从Beans模块继承其特性，
+	并增加了对国际化（例如使用资源束），事件传播，资源加载以及通过例如Servlet容器的透明创建上下文
+	的支持。 Context模块还支持Java EE功能，如EJB，JMX和基本远程处理。
+		ApplicationContext接口是Context模块的焦点。
+	 -->
+  	<dependency>
         <groupId>org.springframework</groupId>
-        <artifactId>spring-core</artifactId>
+        <artifactId>spring-context</artifactId>
         <version>${spring.version}</version>
     </dependency>
-    
+    <!-- 
+    	spring-context-support提供支持将常见的第三方库集成到Spring应用程序上下文中，
+   	特别是用于缓存（EhCache，JCache）和定时任务等（CommonJ，Quartz）。
+     -->
     <dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-context-support</artifactId>
+	    <version>${spring.version}</version>
+	</dependency>
+	<!-- 
+		spring-expression模块提供了一个强大的表达式语言，用于在运行时查询和操作对象图。 
+	它是JSP 2.1规范中规定的统一表达式语言（统一EL）的扩展。 该语言支持设置和获取属性值，
+	属性赋值，方法调用，访问数组的内容，集合和索引器，逻辑和算术运算符，命名变量，
+	以及通过Spring IoC容器中的名称检索对象。 它还支持列表投影和选择以及公共列表聚合。
+	 -->
+    <dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-expression</artifactId>
+	    <version>${spring.version}</version>
+	</dependency>
+    <!-- spring核心容器(Core Container)-end -->
+    
+    <!-- 
+    spring-aop模块提供了一个符合AOP Alliance-compliant的面向方面的编程实现，
+    允许你定义例如方法拦截器和切入点来干净地解耦实现应该分离的功能的代码。 使用源代码级元数据功能，
+    你还可以以类似于.NET属性的方式将行为信息合并到代码中。
+     -->
+    <!-- <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aop</artifactId>
         <version>${spring.version}</version>
-    </dependency>
+    </dependency> -->
+    <!-- 单独的spring-aspects模块提供与AspectJ的集成。 -->
     <!-- <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aspects</artifactId>
         <version>${spring.version}</version>
     </dependency> -->
+    <!-- 
+    	spring-instrument模块提供类仪器支持和类加载器实现以在某些应用服务器中使用。 
+    spring-instrument-tomcat模块包含Spring的Tomcat的工具代理。
+     -->
     <!-- <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-tx</artifactId>
-        <version>${spring.version}</version>
-    </dependency> -->
-    <!-- <dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-instrument</artifactId>
+	    <version>${spring.version}</version>
+	</dependency> -->
+
+	<!-- 
+		Spring Framework 4包括一个 spring-messaging传递模块，它具有来自 Spring Integration项目的关键抽象，
+	例如 Message， MessageChannel， MessageHandler和其他用作基于消息传递的应用程序的基础。
+	 该模块还包括一组用于将消息映射到方法的注解，类似于基于 Spring MVC注解的编程模型。
+	 -->
+   <!--  <dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-messaging</artifactId>
+	    <version>${spring.version}</version>
+	</dependency> -->
+	
+	
+    <!-- spring数据访问/集成(Data Access/Integration)-start -->
+    <!-- 
+    	spring-jdbc模块提供了一个JDBC抽象层，消除了对繁琐的JDBC编码和解析数据库供应商特定的错误代码的需要。
+     -->
+     <!-- <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jdbc</artifactId>
         <version>${spring.version}</version>
     </dependency> -->
+    <!-- spring-tx模块支持实现特殊接口的类以及所有POJO（普通Java对象）的编程和声明事务管理。 -->
+     <!-- <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>${spring.version}</version>
+    </dependency> -->
+    <!-- 
+    	spring-orm模块为流行的对象关系映射API提供集成层，包括JPA和Hibernate。使用spring-orm模块，
+    	您可以使用这些O / R映射框架结合Spring提供的所有其他功能，例如前面提到的简单声明式事务管理功能。
+     -->
+    <!-- <dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-orm</artifactId>
+	</dependency> -->
+	<!-- spring-oxm模块提供了一个支持对象/ XML映射实现的抽象层，例如JAXB，Castor，JiBX和XStream。 -->
+    <!-- <dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-oxm</artifactId>
+	</dependency> -->
+	<!-- 
+		spring-jms模块（Java消息服务）包含用于生成和使用消息的功能。
+		从Spring Framework 4.1开始，它提供了与spring-messaging模块的集成。
+	 -->
+    <!-- <dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-jms</artifactId>
+	</dependency> -->
     
-    <!--spring单元测试依赖 -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
- 
-  <!-- spring webmvc相关jar -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
+    <!-- spring数据访问/集成(Data Access/Integration) - end -->
+    
+    
+   	<!-- spring的web层-start -->
+   	<!-- 
+   		spring-web模块提供基本的面向Web的集成功能，例如多部分文件上传功能和使用Servlet侦听器和
+   	面向Web的应用程序上下文来初始化IoC容器。 它还包含一个HTTP客户端和Web的相关部分的Spring的远程支持。
+   	 -->
+   	<dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+    <!-- 
+    spring-webmvc模块（也称为Web-Servlet模块）包含用于Web应用程序的Spring的模型视图控制器（MVC）
+    和REST Web服务实现。 Spring的MVC框架提供了domain model（领域模型）代码和Web表单之间的清晰分离，
+    并且集成了Spring Framework 所有的其他功能。
+     -->
+	<dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-webmvc</artifactId>
+       <version>${spring.version}</version>
+    </dependency>
+    <!-- 
+    	一个新的spring websocket模块为web应用程序中的客户端和服务器之间的基于websocket的双向通信提供了全面的支持。
+    	它兼容JSR-356，即Java WebSocket API，此外还提供基于sockj的备用选项（例如WebSocket仿真），用于那些还
+    	不支持WebSocket协议的浏览器（例如Internet Explorer<10）。
+     -->
+    <!-- <dependency>
+	   <groupId>org.springframework</groupId>
+	   <artifactId>spring-websocket</artifactId>
+	   <version>${spring.version}</version>
+	</dependency> -->
+	<!-- 
+		The spring-webmvc-portlet module (also known as the Web-Portlet module) provides 
+		the MVC implementation to be used in a Portlet environment and mirrors the functionality
+		 of the Servlet-based spring-webmvc module.
+	 -->
+   <!-- <dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-webmvc-portlet</artifactId>
+	    <version>${spring.version}</version>
+	</dependency> -->
+   	<!-- spring的web层-end -->
+    
+    <!--spring单元测试模块-start -->
+    <!-- 
+    	spring-test模块支持使用JUnit或TestNG对Spring组件进行单元测试和集成测试。 它提供了SpringApplicationContexts的
+    	一致加载和这些上下文的缓存。 它还提供了 mock objects(模拟对象)，您可以使用它来单独测试您的代码。
+     -->
+    <!-- <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <scope>test</scope>
+    </dependency> -->
+    <!--spring单元测试模块-end -->
+    <!-- 日志依赖，这也是spring所强制的依赖 -->
+    <dependency>
+	    <groupId>log4j</groupId>
+	    <artifactId>log4j</artifactId>
+	    <version>1.2.17</version>
+	</dependency>
+        
   
   <!-- mysql驱动包 -->
     <dependency>
@@ -98,7 +254,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         </dependency> 
     
      <!-- logback start -->
-    <dependency>
+    <!-- <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
         <version>${log4j.version}</version>
@@ -122,7 +278,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <groupId>org.logback-extensions</groupId>
         <artifactId>logback-ext-spring</artifactId>
         <version>0.1.1</version>
-    </dependency>
+    </dependency> -->
     
     <!--mybatis依赖 -->
     <dependency>
@@ -138,24 +294,26 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <version>1.2.0</version>
     </dependency>
   <!-- 添加servlet3.0核心包 -->
-    <!-- <dependency>
+    <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>  
         <version>3.0.1</version>
-        注意此处要限定servlet-api的运行范围，不然会和tomcat插件冲突
+    <!-- 注意此处要限定servlet-api的运行范围，不然会和tomcat插件冲突 -->
         <scope>provided</scope>
     </dependency>
     <dependency>
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>javax.servlet.jsp-api</artifactId>
         <version>2.3.2-b01</version>
+        <scope>provided</scope>
     </dependency>
-    jstl
+    <!-- jstl -->
     <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
         <version>1.2</version>
-    </dependency> -->
+        <scope>provided</scope>
+    </dependency>
           
     <!--单元测试依赖 -->
     <dependency>
@@ -164,6 +322,25 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
       <version>4.10</version>
       <scope>test</scope>
     </dependency>
+    
+    <!-- dbcp -->
+    <!-- <dependency>
+	    <groupId>org.apache.commons</groupId>
+	    <artifactId>commons-dbcp2</artifactId>
+	    <version>2.2.0</version>
+	</dependency> -->
+	<dependency>
+	    <groupId>commons-dbcp</groupId>
+	    <artifactId>commons-dbcp</artifactId>
+	    <version>1.4</version>
+	</dependency>
+	<!-- JSR-330 -->
+	<dependency>
+	    <groupId>javax.inject</groupId>
+	    <artifactId>javax.inject</artifactId>
+	    <version>1</version>
+	</dependency>	
+    
   </dependencies>
   <build>
     <finalName>ssmDemo</finalName>

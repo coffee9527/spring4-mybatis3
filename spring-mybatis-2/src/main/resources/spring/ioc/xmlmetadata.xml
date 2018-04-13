@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+">	
+	<!-- 1.两个没有属性和协作依赖的bean，id和name都可以，id更倾向于bean的唯一限定名，name可以理解为别名 -->
+	<bean id="bean1" class="com.coffee.ioc.xmlmetadata.Bean1"/>
+	<bean name="bean2" class="com.coffee.ioc.xmlmetadata.Bean1"/>
+	
+	
+	<!-- 2.有依赖的bean定义 -->
+	<bean id="accountDao"
+        class="com.coffee.ioc.xmlmetadata.JpaAccountDao">
+        <!-- additional collaborators and configuration for this bean go here -->
+    </bean>
+
+    <bean id="itemDao" class="com.coffee.ioc.xmlmetadata.JpaItemDao">
+        <!-- additional collaborators and configuration for this bean go here -->
+    </bean>
+    
+    <bean id="petStore" class="com.coffee.ioc.xmlmetadata.PetStoreServiceImpl">
+        <property name="accountDao" ref="accountDao"/>
+        <property name="itemDao" ref="itemDao"/>
+        <!-- additional collaborators and configuration for this bean go here -->
+    </bean>
+	
+	<!-- 3.现在来说说bean的实例化过程 
+		首先要知道xml中每个<bean/>是BeanDefinition接口的实例
+		实例化bean主要是以下三种形式
+			通过构造函数实例化（实例化的肯定是自己）
+			使用静态工厂方法实例化（可能实例化其它类）
+			使用实例工厂方法实例化（可能实例化其它类）
+	-->
+	<!-- 通过构造函数实例化:直接写上name和class属性即可 -->
+	<bean name="bean3" class="com.coffee.ioc.xmlmetadata.Bean1"/>
+	
+	<!-- 使用静态工厂方法实例化:除了id和class还要写上factory-method属性，指定静态工厂方法名称 -->
+	<bean id="clientService"
+    class="com.coffee.examples.ClientService"
+    factory-method="createInstance"/>
+    
+    <!-- 使用实例工厂方法实例化 :通过factory-bean指定有实例工厂方法的对象bean，再指定该bean中实例工厂方法的名称即可，无需指定class-->
+    <!-- DefaultServiceLocator实例中有createClientServiceInstance方法 -->
+	<bean id="serviceLocator" class="com.coffee.examples.DefaultServiceLocator">
+    <!-- inject any dependencies required by this locator bean -->
+	</bean>
+	<bean id="clientService2"
+	    factory-bean="serviceLocator"
+	    factory-method="createClientServiceInstance"/>
+	    
+	<!-- 4.上面只是单纯的创建对象实例，一个完整的应用程序中必然是多个对象实例协作完整任务的，我们再来看一下用xml如何定义这种依赖关系。这就是依赖注入 
+		依赖注入有两种方式：
+			基于构造方法的依赖注入
+			基于Setter的依赖注入
+		注意：bean中必须要有默认的无参构造
+	-->	    
+	<!-- 基于构造方法的依赖注入 -->
+	<bean id="exampleBean" class="com.coffee.examples.ExampleBean">
+	    <!-- constructor injection using the nested ref element -->
+	    <constructor-arg>
+	        <ref bean="anotherExampleBean"/>
+	    </constructor-arg>
+	
+	    <!-- constructor injection using the neater ref attribute -->
+	    <constructor-arg ref="yetAnotherBean"/>
+	
+	    <constructor-arg type="int" value="1"/>
+	</bean>
+
+	<bean id="anotherExampleBean" class="com.coffee.examples.AnotherBean"/>
+	<bean id="yetAnotherBean" class="com.coffee.examples.YetAnotherBean"/>	
+	<!-- 基于Setter的依赖注入 -->
+	<bean id="exampleBean2" class="com.coffee.examples.ExampleBean">
+	    <!-- setter injection using the nested ref element -->
+	    <property name="beanOne">
+	        <ref bean="anotherExampleBean"/>
+	    </property>
+	
+	    <!-- setter injection using the neater ref attribute -->
+	    <property name="beanTwo" ref="yetAnotherBean"/>
+	    <property name="integerProperty" value="2"/>
+	</bean>
+
+	
+	
+	
+	
+	
+	
+</beans>
+	
+	
